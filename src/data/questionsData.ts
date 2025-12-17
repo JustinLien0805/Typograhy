@@ -28,6 +28,14 @@ export interface QuestionConfig {
   ) => CanvasTextElement[];
 }
 
+export interface QuizCategory {
+  id: string;
+  title: string;
+  description: string;
+  coverImage: string;
+  questions: QuestionConfig[];
+}
+
 export const QUESTIONS: QuestionConfig[] = [
   {
     id: "q_poster",
@@ -170,3 +178,25 @@ export const QUESTIONS: QuestionConfig[] = [
     },
   },
 ];
+export const QUIZ_CATEGORIES: QuizCategory[] = [
+  {
+    id: "Type4",
+    title: "Type4",
+    description: "Master the typography of posters and logos.",
+    coverImage: posterBg,
+    questions: QUESTIONS,
+  },
+];
+export const findQuestionById = (questionId: string) => {
+  for (const category of QUIZ_CATEGORIES) {
+    const index = category.questions.findIndex((q) => q.id === questionId);
+    if (index !== -1) {
+      return {
+        question: category.questions[index],
+        category: category,
+        nextQuestionId: category.questions[index + 1]?.id || null, // 如果有下一題就回傳 ID，沒有就 null
+      };
+    }
+  }
+  return null;
+};
