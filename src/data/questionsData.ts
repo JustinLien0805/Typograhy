@@ -1,5 +1,10 @@
+import React from "react";
 import type { FontOption } from "../components/BaseQuiz";
-import type { CanvasTextElement, MicroQuestionConfig } from "../types";
+import type {
+  CanvasTextElement,
+  MicroQuestionConfig,
+  ClassificationQuestionConfig,
+} from "../types";
 
 import posterBg from "../assets/technology.png";
 import coffeeBg from "../assets/coffee.png";
@@ -213,22 +218,6 @@ export const MICRO_QUESTIONS: MicroQuestionConfig[] = [
     ResultComponent: r38,
   },
 ];
-export const QUIZ_CATEGORIES: any[] = [
-  {
-    id: "Type4",
-    title: "Type4",
-    description: "Master the typography of posters and logos.",
-    coverImage: posterBg,
-    questions: QUESTIONS,
-  },
-  {
-    id: "Micro",
-    title: "Micro-Typography",
-    description: "Train your eye for spacing, weight, and font details.",
-    coverImage: posterBg, // 暫時用一樣的圖，之後可換
-    questions: MICRO_QUESTIONS, // 放入上面的新題目
-  },
-];
 
 export const findQuestionById = (questionId: string) => {
   for (const category of QUIZ_CATEGORIES) {
@@ -243,3 +232,217 @@ export const findQuestionById = (questionId: string) => {
   }
   return null;
 };
+
+export const CLASSIFICATION_QUESTIONS: ClassificationQuestionConfig[] = [
+  // --- Type A (Variant 1: Big Text) ---
+  {
+    type: "classification",
+    subtype: "classifier",
+    id: "q_8",
+    title: "Is this font Serif or Sans-serif?", // 普通標題
+    mainSubject: "Times New Roman", // *** 有這個欄位 = 顯示大字 ***
+    mainSubjectFont: "Times New Roman, serif",
+    requiredFonts: ["Times New Roman"],
+    options: [
+      { id: "opt1", text: "Serif", isCorrect: true },
+      { id: "opt2", text: "Sans-serif", isCorrect: false },
+    ],
+    marquee: [
+      {
+        text: "Times New Roman",
+        className: "text-green-500",
+        fontFamily: "Times New Roman",
+      },
+      {
+        text: "Times New Roman",
+        className: "text-pink-500 italic",
+        fontFamily: "Times New Roman",
+      },
+      {
+        text: "Times New Roman",
+        className: "text-white font-light",
+        fontFamily: "Times New Roman",
+      },
+      {
+        text: "Times New Roman",
+        className: "text-yellow-500 font-bold",
+        fontFamily: "Times New Roman",
+      },
+    ],
+  },
+
+  // --- Type A (Variant 2: Question Only) ---
+  {
+    type: "classification",
+    subtype: "classifier",
+    id: "q_7",
+    // 標題中直接包含特殊樣式的字體
+    title: React.createElement(
+      "span",
+      null,
+      "What category is ",
+      React.createElement(
+        "span",
+        {
+          className: "font-brush text-2xl",
+          style: { fontFamily: "Brush Script MT, cursive" },
+        },
+        "Brush Script"
+      ),
+      " ?"
+    ),
+    // mainSubject: undefined,  <-- 沒有這個欄位 = 純問題版
+    requiredFonts: ["Brush Script MT"],
+    options: [
+      { id: "1", text: "Serif", isCorrect: false },
+      { id: "2", text: "Sans-serif", isCorrect: false },
+      { id: "3", text: "Script", isCorrect: true },
+      { id: "4", text: "Display", isCorrect: false },
+      { id: "5", text: "Monospace", isCorrect: false },
+    ],
+    marquee: [
+      {
+        text: "Brush Script",
+        className: "text-white",
+        fontFamily: "Brush Script MT, cursive",
+      },
+      {
+        text: "Brush Script",
+        className: "text-pink-500",
+        fontFamily: "Brush Script MT, cursive",
+      },
+      {
+        text: "Brush Script",
+        className: "text-yellow-500",
+        fontFamily: "Brush Script MT, cursive",
+      },
+      {
+        text: "Brush Script",
+        className: "text-blue-500",
+        fontFamily: "Brush Script MT, cursive",
+      },
+    ],
+  },
+
+  // --- Type B: The Imposter (Reveal Logic) ---
+  {
+    type: "classification",
+    subtype: "imposter",
+    id: "q_10",
+    title: "Identify the real Futura",
+    requiredFonts: ["Futura", "Avenir", "Carrois Gothic"], // 確保載入這些字
+    options: [
+      // 錯誤選項：一開始顯示 Futura (用 Avenir 字體)，揭曉時顯示 "Avenir"
+      {
+        id: "opt1",
+        text: "Futura",
+        revealText: "Avenir",
+        isCorrect: false,
+        fontFamily: "Avenir, sans-serif",
+      },
+      // 正確選項
+      {
+        id: "opt2",
+        text: "Futura",
+        revealText: "Futura",
+        isCorrect: true,
+        fontFamily: "Futura, sans-serif",
+      },
+      // 錯誤選項
+      {
+        id: "opt3",
+        text: "Futura",
+        revealText: "Carrois",
+        isCorrect: false,
+        fontFamily: "'Carrois Gothic', sans-serif",
+      },
+    ],
+    marquee: [
+      {
+        text: "Futura Future",
+        className: "text-blue-400",
+        fontFamily: "Futura",
+      },
+      {
+        text: "Futura Future",
+        className: "text-green-400 italic",
+        fontFamily: "Futura",
+      },
+    ],
+  },
+  {
+    type: "classification",
+    subtype: "grid",
+    id: "q_12",
+    title: "which of these are monospace fonts?",
+
+    // 這裡列出需要從 Google 下載的字體
+    // Courier 和 Monaco 是系統字，不需要列在這裡 (且在 fonts.ts 裡被 skip 了)
+    requiredFonts: ["Space Mono", "Inria Serif", "Kadwa", "IBM Plex Mono"],
+
+    options: [
+      // Row 1
+      {
+        id: "opt1",
+        text: "courier",
+        isCorrect: true,
+        fontFamily: "'Courier New', Courier, monospace", // 系統等寬字
+      },
+      {
+        id: "opt2",
+        text: "monaco",
+        isCorrect: true,
+        fontFamily: "Monaco, Consolas, monospace", // macOS 經典等寬字
+      },
+      {
+        id: "opt3",
+        text: "space",
+        isCorrect: true,
+        fontFamily: "'Space Mono', monospace", // Google Font
+      },
+
+      // Row 2
+      {
+        id: "opt4",
+        text: "inria",
+        isCorrect: false,
+        fontFamily: "'Inria Serif', serif", // Google Font (有襯線，非等寬)
+      },
+      {
+        id: "opt5",
+        text: "kadwa",
+        isCorrect: false,
+        fontFamily: "'Kadwa', serif", // Google Font (有襯線，非等寬)
+      },
+      {
+        id: "opt6",
+        text: "ibm plex",
+        isCorrect: true,
+        fontFamily: "'IBM Plex Mono', monospace", // Google Font
+      },
+    ],
+  },
+];
+export const QUIZ_CATEGORIES: any[] = [
+  {
+    id: "Type4",
+    title: "Type4",
+    description: "Master the typography of posters and logos.",
+    coverImage: posterBg,
+    questions: QUESTIONS,
+  },
+  {
+    id: "Micro",
+    title: "Micro-Typography",
+    description: "Train your eye for spacing, weight, and font details.",
+    coverImage: posterBg,
+    questions: MICRO_QUESTIONS,
+  },
+  {
+    id: "Classification",
+    title: "Classification",
+    description: "Train your eye for spacing, weight, and font details.",
+    coverImage: posterBg,
+    questions: CLASSIFICATION_QUESTIONS,
+  },
+];

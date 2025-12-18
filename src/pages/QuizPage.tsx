@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import UnifiedQuiz from "../components/UnifiedQuiz";
 import QuizMicro from "../components/QuizMicro";
+import QuizClassification from "../components/QuizClassification";
 import { findQuestionById } from "../data/questionsData";
 
 export default function QuizPage() {
@@ -33,6 +34,15 @@ export default function QuizPage() {
   if (question.type === "micro") {
     return (
       <QuizMicro key={question.id} config={question} onNext={handleComplete} />
+    );
+  }
+  if (question.type === "classification") {
+    return (
+      <QuizClassification
+        key={question.id}
+        config={question} // 這裡 TypeScript 會自動推斷型別
+        onNext={handleComplete}
+      />
     );
   }
 

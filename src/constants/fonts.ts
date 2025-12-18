@@ -17,6 +17,9 @@ export const SKIPPED_FONTS = [
   "Courier New",
   "Verdana",
   "Inter",
+  "Brush Script MT", // 系統字，不用抓
+  "Futura",          // 商用字，Google 沒有
+  "Avenir",          // 商用字，Google 沒有
 ];
 
 export const isCssVariable = (fontName: string) => {
