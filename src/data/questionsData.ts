@@ -1,9 +1,17 @@
 import type { FontOption } from "../components/BaseQuiz";
-import type { CanvasTextElement } from "../types";
+import type { CanvasTextElement, MicroQuestionConfig } from "../types";
 
 import posterBg from "../assets/technology.png";
 import coffeeBg from "../assets/coffee.png";
-
+import r33 from "../assets/r33.svg?react";
+import r38 from "../assets/r38.svg?react";
+import Ba38Svg from "../assets/ba38.svg?react";
+import Ba33Svg from "../assets/ba33.svg?react";
+import a38Svg from "../assets/a33.svg?react";
+import a33Svg from "../assets/a33.svg?react";
+import b38Svg from "../assets/b33.svg?react";
+import b33Svg from "../assets/b33.svg?react";
+import lineSvg from "../assets/line.svg?react";
 export interface QuestionConfig {
   id: string;
   title: string;
@@ -178,7 +186,34 @@ export const QUESTIONS: QuestionConfig[] = [
     },
   },
 ];
-export const QUIZ_CATEGORIES: QuizCategory[] = [
+
+export const MICRO_QUESTIONS: MicroQuestionConfig[] = [
+  // --- Case 1: afsd (Kerning) ---
+  {
+    type: "micro",
+    id: "q_33",
+    title: "what property was adjusted?",
+    beforeText: "afsd",
+    afterText: "af sd",
+    options: ["weight", "kerning", "tracking", "leading"],
+    correctOptions: ["kerning"],
+    QuestionComponent: Ba33Svg,
+    ResultComponent: r33,
+  },
+  // --- Case 2: ek4f (Multi-change) ---
+  {
+    type: "micro",
+    id: "q_38",
+    title: "identify ALL modifications made",
+    beforeText: "ek4f",
+    afterText: "ek4f",
+    options: ["kerning", "weight", "leading", "tracking", "font"],
+    correctOptions: ["kerning", "weight", "font"],
+    QuestionComponent: Ba38Svg,
+    ResultComponent: r38,
+  },
+];
+export const QUIZ_CATEGORIES: any[] = [
   {
     id: "Type4",
     title: "Type4",
@@ -186,15 +221,23 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     coverImage: posterBg,
     questions: QUESTIONS,
   },
+  {
+    id: "Micro",
+    title: "Micro-Typography",
+    description: "Train your eye for spacing, weight, and font details.",
+    coverImage: posterBg, // 暫時用一樣的圖，之後可換
+    questions: MICRO_QUESTIONS, // 放入上面的新題目
+  },
 ];
+
 export const findQuestionById = (questionId: string) => {
   for (const category of QUIZ_CATEGORIES) {
-    const index = category.questions.findIndex((q) => q.id === questionId);
+    const index = category.questions.findIndex((q: any) => q.id === questionId);
     if (index !== -1) {
       return {
         question: category.questions[index],
         category: category,
-        nextQuestionId: category.questions[index + 1]?.id || null, // 如果有下一題就回傳 ID，沒有就 null
+        nextQuestionId: category.questions[index + 1]?.id || null,
       };
     }
   }

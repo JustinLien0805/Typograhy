@@ -26,3 +26,17 @@ export interface CanvasImageConfig {
   height: number;
   opacity?: number;
 }
+
+export interface MicroQuestionConfig {
+  type: "micro";
+  id: string;
+  title: string;
+  beforeText: string;
+  afterText: string;
+
+  options: string[];
+
+  correctOptions: string[];
+  QuestionComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+  ResultComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+}
