@@ -13,7 +13,6 @@ export default function Home() {
           {QUIZ_CATEGORIES.map((category) => (
             <Link
               key={category.id}
-              // *** 關鍵：點擊後去這個類別的「第一題」 ***
               to={`/quiz/${category.questions[0].id}`}
               className="group block relative overflow-hidden rounded-2xl border-gray-800 transition-colors duration-300"
             >
@@ -29,7 +28,6 @@ export default function Home() {
                   <p className="text-sm text-gray-300 mt-1">
                     {category.description}
                   </p>
-                  {/* 顯示裡面有幾題 */}
                   <span className="inline-block mt-3 text-xs bg-white/20 px-2 py-1 rounded">
                     {category.questions.length} Questions
                   </span>

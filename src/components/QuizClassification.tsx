@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { ClassificationQuestionConfig } from "../types";
 import InfiniteMarquee from "./InfiniteMarquee";
-import { useGoogleFonts } from "../hooks/useGoogleFonts"; // 引入 Hook
+import { useGoogleFonts } from "../hooks/useGoogleFonts";
 
 interface QuizClassificationProps {
   config: ClassificationQuestionConfig;
@@ -13,16 +13,14 @@ export default function QuizClassification({
   config,
   onNext,
 }: QuizClassificationProps) {
-  // 1. 使用 Hook 載入字體
   useGoogleFonts(config.requiredFonts || []);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
 
-  // *** 根據設計稿定義的錯誤顏色 ***
   const ERROR_COLOR = "#FD9798";
   const SUCCESS_COLOR = "#00A73D";
-  // Handlers
+
   const handleSingleSelect = (id: string) => {
     if (submitted) return;
     setSelectedIds([id]);
@@ -43,29 +41,22 @@ export default function QuizClassification({
   };
   const isAllCorrect =
     submitted &&
-    // 如果是單選題 (Classifier/Imposter)，檢查選到的那個是否正確
     ((config.subtype !== "grid" &&
       config.options.find((o) => o.id === selectedIds[0])?.isCorrect) ||
-      // 如果是多選題 (Grid)，檢查選的數量和 ID 是否完全匹配正確答案
       (config.subtype === "grid" &&
         selectedIds.length ===
           config.options.filter((o) => o.isCorrect).length &&
         selectedIds.every(
           (id) => config.options.find((o) => o.id === id)?.isCorrect
         )));
-  // --- Renderers ---
 
-  // Type A: Classifier
   const renderClassifier = () => {
-    // 判斷按鈕佈局：如果有 3 個以上按鈕，分為兩排 (參考 Q7 截圖)
-    // 這裡做一個簡單的分割邏輯
     const topRowOptions = config.options.slice(0, 2);
     const bottomRowOptions = config.options.slice(2);
     const hasTwoRows = config.options.length > 3;
 
     return (
       <div className="flex flex-col items-center w-full max-w-4xl relative z-10">
-        {/* Variant 1: Big Text Mode (如果 config 有 mainSubject) */}
         {config.mainSubject && (
           <motion.h1
             initial={{ opacity: 0, scale: 0.9 }}
@@ -77,13 +68,10 @@ export default function QuizClassification({
           </motion.h1>
         )}
 
-        {/* Buttons Container */}
         <div className="flex flex-col gap-6 items-center w-full">
-          {/* Row 1 */}
           <div className="flex gap-4 md:gap-8 justify-center flex-wrap">
             {topRowOptions.map((opt) => renderPillButton(opt))}
           </div>
-          {/* Row 2 (如果有) */}
           {hasTwoRows && (
             <div className="flex gap-4 md:gap-8 justify-center flex-wrap">
               {bottomRowOptions.map((opt) => renderPillButton(opt))}
@@ -94,7 +82,6 @@ export default function QuizClassification({
     );
   };
 
-  // 輔助函式：渲染藥丸按鈕 (Type A)
   const renderPillButton = (opt: any) => {
     const isSelected = selectedIds.includes(opt.id);
     let btnClass =
@@ -103,12 +90,8 @@ export default function QuizClassification({
 
     if (submitted) {
       if (opt.isCorrect) {
-        // 正解：白色 (參考 Q7 Correct)
         btnClass = "bg-white text-black border-white opacity-100";
       } else if (isSelected && !opt.isCorrect) {
-        // 選錯：紅色 #FD9798 (參考 Type B/C 的錯誤邏輯，或保持設計稿的灰色)
-        // 設計稿 Q7 若選錯 (Typo)，按鈕似乎是變暗顯示正確答案
-        // 這裡我們讓選錯的變暗，正確的亮起
         btnClass = "border-gray-800 text-gray-600 opacity-30";
       } else {
         btnClass = "border-gray-800 text-gray-600 opacity-30";
@@ -130,32 +113,25 @@ export default function QuizClassification({
     );
   };
 
-  // Type B: Imposter (Reveal Logic)
   const renderImposter = () => (
     <div className="flex flex-row justify-center gap-8 md:gap-16 w-full max-w-5xl items-center relative z-10">
       {config.options.map((opt) => {
         const isSelected = selectedIds.includes(opt.id);
 
-        // 1. 決定顯示文字 (Reveal Logic)
-        // 如果提交了 且 (是這個選項被選錯 OR 我們想揭曉所有錯誤選項)，顯示 revealText
-        // 根據截圖，點錯後，錯誤的那個會變名，其他的也會變暗
         const displayText =
           submitted && !opt.isCorrect ? opt.revealText || opt.text : opt.text;
 
-        // 2. 決定顏色
         let color = "white";
         let opacity = 1;
 
         if (submitted) {
           if (opt.isCorrect) {
-            color = "white"; // 正確選項保持白色
+            color = "white";
             opacity = 1;
           } else if (isSelected) {
-            // *** 選錯的選項變紅 ***
             color = ERROR_COLOR;
             opacity = 1;
           } else {
-            // 沒選的其他選項：變暗 (如 Screenshot Q10 Answer-Correct)
             color = "#333";
             opacity = 0.3;
           }
@@ -167,7 +143,7 @@ export default function QuizClassification({
             onClick={() => handleSingleSelect(opt.id)}
             className="text-4xl md:text-6xl cursor-pointer transition-all duration-500"
             style={{
-              fontFamily: opt.fontFamily, // 使用各個選項自己的字體
+              fontFamily: opt.fontFamily,
               color: color,
               opacity: opacity,
             }}
@@ -180,7 +156,6 @@ export default function QuizClassification({
     </div>
   );
 
-  // Type C: Grid (Multi-select)
   const renderGrid = () => (
     <div className="flex flex-col items-center w-full max-w-4xl relative z-10">
       <div className="grid grid-cols-3 gap-x-12 gap-y-20 mb-16 w-full text-center">
@@ -192,21 +167,16 @@ export default function QuizClassification({
 
           if (submitted) {
             if (opt.isCorrect) {
-              // *** 修改處：正確答案顯示綠色 (#00A73D) ***
-              // 不管有沒有選到，都顯示綠色，讓使用者清楚知道哪些是對的
               color = SUCCESS_COLOR;
               opacity = 1;
             } else if (isSelected && !opt.isCorrect) {
-              // 選錯的：顯示紅色
               color = ERROR_COLOR;
               opacity = 1;
             } else {
-              // 沒選且是錯的：變暗淡出
               color = "white";
               opacity = 0.2;
             }
           } else {
-            // 未提交：選中亮白，未選灰色
             color = isSelected ? "white" : "#9ca3af";
             opacity = 1;
           }
@@ -230,7 +200,6 @@ export default function QuizClassification({
         })}
       </div>
 
-      {/* Grid Submit Button */}
       {!submitted && (
         <button
           onClick={handleGridSubmit}
@@ -244,22 +213,18 @@ export default function QuizClassification({
 
   return (
     <div className="w-full min-h-screen bg-black text-white flex flex-col items-center justify-center relative overflow-hidden p-6">
-      {/* 標題區域 */}
       <div className="absolute top-16 md:top-24 text-center w-full z-20">
-        {/* 根據設計稿，純問題版的標題就是主體，所以字體可以大一點 */}
         <div className="text-center text-xl md:text-2xl text-white font-light tracking-wide">
           {config.title}
         </div>
       </div>
 
-      {/* 主內容區 */}
       <div className="grow flex items-center justify-center w-full">
         {config.subtype === "classifier" && renderClassifier()}
         {config.subtype === "imposter" && renderImposter()}
         {config.subtype === "grid" && renderGrid()}
       </div>
 
-      {/* 結果回饋 (Result Text) */}
       <AnimatePresence>
         {submitted && (
           <motion.div
@@ -292,7 +257,6 @@ export default function QuizClassification({
           )}
         </AnimatePresence>
       </div>
-      {/* Marquee (如果有設定) */}
       {config.marquee && <InfiniteMarquee items={config.marquee} />}
     </div>
   );

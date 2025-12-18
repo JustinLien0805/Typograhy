@@ -3,24 +3,21 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { QUIZ_CATEGORIES } from "../data/questionsData";
 
-// --- Visual Configuration (UI 樣式設定) ---
-// 這裡將你的 Data ID 映射到 Persona 風格的視覺設定
-// key 必須對應 QUIZ_CATEGORIES 裡的 id (例如 "micro", "poster"...)
 const VISUAL_CONFIG: Record<
   string,
   {
-    subtitle: string; // 副標題 (如果 data 裡沒有 description 可用這個)
-    color: string; // 主題色
-    position: string; // 按鈕位置
-    lineOrigin: { x: number; y: number }; // 線條起點 %
-    lineEnd: { x: number; y: number }; // 線條終點 %
-    fontClass: string; // 對應字體 class
-    fontName: string; // 背景大字
+    subtitle: string;
+    color: string;
+    position: string;
+    lineOrigin: { x: number; y: number };
+    lineEnd: { x: number; y: number };
+    fontClass: string;
+    fontName: string;
   }
 > = {
   micro: {
     subtitle: "Spacing & Weight",
-    color: "#4ADE80", // Green
+    color: "#4ADE80",
     position: "top-0 left-0 md:top-20 md:left-20",
     lineOrigin: { x: 20, y: 30 },
     lineEnd: { x: 15, y: 20 },
@@ -29,7 +26,7 @@ const VISUAL_CONFIG: Record<
   },
   poster: {
     subtitle: "Display Impact",
-    color: "#FACC15", // Yellow
+    color: "#FACC15",
     position: "bottom-0 left-0 md:bottom-20 md:left-20",
     lineOrigin: { x: 32, y: 80 },
     lineEnd: { x: 15, y: 90 },
@@ -38,7 +35,7 @@ const VISUAL_CONFIG: Record<
   },
   classification: {
     subtitle: "Serif vs Sans",
-    color: "#60A5FA", // Blue
+    color: "#60A5FA",
     position: "top-0 right-0 md:top-24 md:right-24",
     lineOrigin: { x: 65, y: 30 },
     lineEnd: { x: 80, y: 15 },
@@ -47,7 +44,7 @@ const VISUAL_CONFIG: Record<
   },
   anatomy: {
     subtitle: "Structure Details",
-    color: "#C084FC", // Purple
+    color: "#C084FC",
     position: "bottom-0 right-0 md:bottom-32 md:right-32",
     lineOrigin: { x: 88, y: 55 },
     lineEnd: { x: 95, y: 75 },
@@ -59,19 +56,13 @@ const VISUAL_CONFIG: Record<
 export default function SelectTopic() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const navigate = useNavigate();
-  // 1. 合併真實資料與視覺設定
-  // 這樣我們可以同時拿到 category.title (真實資料) 和 config.color (視覺設定)
   const categoriesWithStyle = QUIZ_CATEGORIES.map((cat) => {
     const config = VISUAL_CONFIG[cat.id];
-    // 如果沒有對應的視覺設定，給一個預設值防爆
     if (!config) return null;
     return { ...cat, ...config };
-  }).filter((item) => item !== null); // 過濾掉沒有設定 config 的類別
+  }).filter((item) => item !== null);
 
-  // 取得當前激活的主題物件
   const activeTopic = categoriesWithStyle.find((t) => t.id === activeId);
-
-  // 決定當前頁面字體
   const currentFontClass = activeTopic ? activeTopic.fontClass : "font-sans";
   const handleNavigate = (topicId: string) => {
     const topic = categoriesWithStyle.find((t) => t.id === topicId);
@@ -83,11 +74,9 @@ export default function SelectTopic() {
     <div
       className={`min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center transition-all duration-300 ${currentFontClass}`}
     >
-      {/* --- 背景層 --- */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
 
-        {/* 背景大字裝飾 */}
         <AnimatePresence mode="wait">
           {activeTopic && (
             <motion.div
@@ -104,7 +93,6 @@ export default function SelectTopic() {
           )}
         </AnimatePresence>
 
-        {/* 漸層背景色塊 */}
         <AnimatePresence>
           {activeTopic && (
             <motion.div
@@ -121,12 +109,9 @@ export default function SelectTopic() {
         </AnimatePresence>
       </div>
 
-      {/* --- 中央 LOGO 區域 --- */}
       <div className="relative z-10 w-[300px] h-[150px] md:w-[600px] md:h-[300px]">
-        {/* SVG 連接線 */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none visible overflow-visible">
           {categoriesWithStyle.map((topic) => {
-            // 這裡的 topic 已經包含了 ...cat 和 ...config
             const isActive = activeId === topic.id;
             return (
               <motion.line
@@ -152,7 +137,6 @@ export default function SelectTopic() {
           })}
         </svg>
 
-        {/* 核心文字 "typr" (顏色對應) */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
           <motion.h1
             className="text-[8rem] md:text-[14rem] font-bold tracking-tighter leading-none italic relative mix-blend-lighten transition-all duration-300"
@@ -162,7 +146,6 @@ export default function SelectTopic() {
             }}
             transition={{ duration: 0.2 }}
           >
-            {/* 根據 ID 來變色 */}
             <span
               className={`transition-colors duration-200 ${
                 activeId === "micro" ? "text-[#4ADE80]" : "text-white"
@@ -194,40 +177,35 @@ export default function SelectTopic() {
           </motion.h1>
         </div>
 
-        {/* 隱形熱區 (Hotspots) - 簡單對應四個角落 */}
         <div
           className="absolute top-[10%] left-[10%] w-[20%] h-[50%] cursor-pointer z-20"
           onMouseEnter={() => setActiveId("micro")}
           onMouseLeave={() => setActiveId(null)}
-          onClick={() => handleNavigate("micro")} // Add Click
+          onClick={() => handleNavigate("micro")}
         />
 
-        {/* Poster (y) */}
         <div
           className="absolute bottom-[10%] left-[25%] w-[20%] h-[50%] cursor-pointer z-20"
           onMouseEnter={() => setActiveId("poster")}
           onMouseLeave={() => setActiveId(null)}
-          onClick={() => handleNavigate("poster")} // Add Click
+          onClick={() => handleNavigate("poster")}
         />
 
-        {/* Classification (p) */}
         <div
           className="absolute top-[20%] right-[35%] w-[20%] h-[50%] cursor-pointer z-20"
           onMouseEnter={() => setActiveId("classification")}
           onMouseLeave={() => setActiveId(null)}
-          onClick={() => handleNavigate("classification")} // Add Click
+          onClick={() => handleNavigate("classification")}
         />
 
-        {/* Anatomy (r) */}
         <div
           className="absolute bottom-[10%] right-[15%] w-[20%] h-[50%] cursor-pointer z-20"
           onMouseEnter={() => setActiveId("anatomy")}
           onMouseLeave={() => setActiveId(null)}
-          onClick={() => handleNavigate("anatomy")} // Add Click
+          onClick={() => handleNavigate("anatomy")}
         />
       </div>
 
-      {/* --- 選單按鈕 (含路由邏輯) --- */}
       <div className="absolute inset-0 pointer-events-none">
         {categoriesWithStyle.map((topic) => (
           <MenuItem
@@ -248,7 +226,6 @@ export default function SelectTopic() {
   );
 }
 
-// --- MenuItem Component (整合 Link) ---
 function MenuItem({
   topic,
   isActive,
@@ -260,7 +237,6 @@ function MenuItem({
   onHover: () => void;
   onLeave: () => void;
 }) {
-  // *** 邏輯核心：取得該分類的第一個問題 ID ***
   const firstQuestionId = topic.questions?.[0]?.id;
   const linkTarget = firstQuestionId ? `/quiz/${firstQuestionId}` : "#";
 
@@ -270,8 +246,6 @@ function MenuItem({
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
     >
-      {/* *** 使用 Link 包覆按鈕 *** 這樣點擊就會跳轉到 /quiz/q_xx
-       */}
       <Link to={linkTarget} className="block">
         <motion.div
           initial={{ opacity: 0, scale: 0.8, x: 20 }}
@@ -283,7 +257,6 @@ function MenuItem({
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           className="relative group cursor-pointer"
         >
-          {/* 背景色塊 */}
           <motion.div
             className="absolute inset-0 -skew-x-12 bg-black"
             animate={{
@@ -295,14 +268,12 @@ function MenuItem({
           />
 
           <div className="relative px-8 py-5 z-10 flex items-center gap-4">
-            {/* 左側條 */}
             <motion.div
               className="w-2 h-10 bg-white"
               animate={{ backgroundColor: isActive ? topic.color : "#555" }}
             />
 
             <div className="flex flex-col">
-              {/* 顯示真實資料的 Title */}
               <h2
                 className={`text-2xl font-bold uppercase leading-none ${
                   isActive ? "text-white" : "text-gray-400"
@@ -310,12 +281,10 @@ function MenuItem({
               >
                 {topic.title}
               </h2>
-              {/* 顯示設定的 Subtitle 或真實資料的 description */}
               <span className="text-[10px] tracking-widest text-gray-500 mt-1">
                 {topic.subtitle || topic.description}
               </span>
 
-              {/* 顯示題目數量 (Optional) */}
               {isActive && (
                 <span className="text-[9px] text-white/60 absolute top-2 right-2 font-mono">
                   {topic.questions.length} Qs

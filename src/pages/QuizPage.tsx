@@ -1,4 +1,3 @@
-// src/pages/QuizPage.tsx
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import UnifiedQuiz from "../components/UnifiedQuiz";
@@ -41,7 +40,7 @@ export default function QuizPage() {
     return (
       <QuizClassification
         key={question.id}
-        config={question} // 這裡 TypeScript 會自動推斷型別
+        config={question}
         onNext={handleComplete}
       />
     );

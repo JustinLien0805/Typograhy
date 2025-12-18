@@ -1,5 +1,3 @@
-// src/components/QuizAnatomy.tsx
-
 import { useState, Suspense } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { AnatomyQuestionConfig } from "../types";
@@ -20,18 +18,13 @@ export default function QuizAnatomy({ config, onNext }: QuizAnatomyProps) {
 
   return (
     <div className="w-full min-h-screen bg-black text-white flex flex-col items-center justify-center relative p-6">
-      {/* Title */}
       <div className="absolute top-20 text-center w-full z-10">
         <p className="text-xl md:text-2xl text-white font-light tracking-wide mb-2">
           {config.title}
         </p>
       </div>
 
-      {/* Main Canvas Area */}
       <div className="relative w-full max-w-4xl aspect-4/3">
-        {/* 1. 外層 Suspense：只負責「題目底圖」的初始載入
-             如果題目還沒載好，顯示 Loading 文字
-        */}
         <Suspense
           fallback={
             <div className="text-gray-600 flex justify-center items-center h-full">
@@ -39,7 +32,6 @@ export default function QuizAnatomy({ config, onNext }: QuizAnatomyProps) {
             </div>
           }
         >
-          {/* --- LAYER 1: QUESTION (永遠顯示) --- */}
           <div className="absolute inset-0 z-0">
             {config.layers.map((layer) => (
               <div
@@ -60,22 +52,15 @@ export default function QuizAnatomy({ config, onNext }: QuizAnatomyProps) {
             ))}
           </div>
 
-          {/* --- LAYER 2: RESULT (淡入覆蓋) --- */}
           <AnimatePresence>
             {submitted && (
               <motion.div
                 key="result"
-                className="absolute inset-0 z-10" // 蓋在上面
-                // *** Animation 設定 ***
+                className="absolute inset-0 z-10"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }} // 持續 0.8 秒 (調慢一點更有質感)
+                transition={{ duration: 1 }}
               >
-                {/* 內層 Suspense: 
-                    防止 lazy load 導致畫面閃爍。
-                    fallback={null} 讓載入期間保持透明，
-                    載入完成後因為外層 motion.div 的關係，會直接顯示(或淡入)。
-                */}
                 <Suspense fallback={null}>
                   <config.ResultComponent className="w-full h-full" />
                 </Suspense>
@@ -87,10 +72,8 @@ export default function QuizAnatomy({ config, onNext }: QuizAnatomyProps) {
       <AnimatePresence>
         {submitted && (
           <motion.div
-            // 修改 1: 動畫方向微調 (選用，讓它從上面輕輕滑下來)
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            // 修改 2: 位置從 bottom-24 改到 top-32 (標題下方)
             className="text-center top-32 md:top-40 w-full pointer-events-none z-20"
           >
             <p
@@ -103,7 +86,6 @@ export default function QuizAnatomy({ config, onNext }: QuizAnatomyProps) {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Next Button */}
       <div className="absolute bottom-24 z-30">
         <AnimatePresence>
           {submitted && (
